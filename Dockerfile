@@ -17,14 +17,18 @@ ENV PATH=$PATH:$TIDB_PACKAGE_ROOT/bin:$TIDB_SINGLENODE_SCRIPTS \
 
 RUN apt-get update \
     && apt-get install -y wget \
-    && apt-get clean all \
     && echo "Downloading $TIDB_TARBALL_URL..." \
     && wget $TIDB_TARBALL_URL -O /tmp/tidb.tar.gz --progress=dot:giga \
     && ls -la /tmp/tidb.tar.gz \
     && echo "Verifying tarball's sha256sum..." \
     && bash -ex -c "sha256sum /tmp/tidb.tar.gz && sha256sum /tmp/tidb.tar.gz | grep -c $TIDB_TARBALL_SHA256SUM" \
     && mkdir -p $TIDB_PACKAGE_ROOT $DATA_DIR $PD_DATA_DIR $TIKV_DATA_DIR \
-    && tar -xzvf /tmp/tidb.tar.gz --directory=$TIDB_PACKAGE_ROOT
+    && tar -xzvf /tmp/tidb.tar.gz --directory=$TIDB_PACKAGE_ROOT \
+    && echo "Cleaning up for a smallish image layer." \
+    && rm -f /tmp/tidb.tar.gz \
+    && apt-get remove -y --purge wget \
+    && apt-get autoremove -y --purge \
+    && apt-get clean all
 
 ADD tidb-singlenode-scripts $TIDB_SINGLENODE_SCRIPTS
 CMD start_tidb_stack.sh
