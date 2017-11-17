@@ -30,4 +30,5 @@ RUN apt-get update \
     && apt-get clean all
 
 ADD tidb-singlenode-scripts $TIDB_SINGLENODE_SCRIPTS
+EXPOSE 4000
 CMD ["start_tidb_stack.sh"]

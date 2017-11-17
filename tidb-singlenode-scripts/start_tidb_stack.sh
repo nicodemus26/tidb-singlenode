@@ -2,20 +2,25 @@
 
 echo "Starting Placement Driver..."
 pd-server \
-    --data-dir="$PD_DATA_DIR"
+    --data-dir="$PD_DATA_DIR" &
+
+sleep 3
 
 echo "Starting TiKV..."
 tikv-server \
-    --pd="127.0.0.1:$PD_PORT" \
-    --data-dir="$TIKV_DATA_DIR"
+    --pd="127.0.0.1:2379" \
+    --data-dir="$TIKV_DATA_DIR" &
+
+sleep 3
 
 echo "Starting TiDB..."
 tidb-server \
-    --path="127.0.0.1:$PD_PORT"
+    --path="127.0.0.1:2379" &
 
-while { grep -c pd-server /proc/*/cmdline \
-     && grep -c tikv-server /proc/*/cmdline \
-     && grep -c tidb-server /proc/*/cmdline }; do
+while grep '^'pd-server /proc/*/cmdline >/dev/null \
+    && grep '^'tikv-server /proc/*/cmdline >/dev/null \
+    && grep '^'tidb-server /proc/*/cmdline >/dev/null
+do
     sleep 1
 done
 exit 1
