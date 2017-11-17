@@ -11,10 +11,12 @@ ENV BINARY_TARGET=linux-amd64 \
 ENV PATH=$PATH:$TIDB_PACKAGE_ROOT/bin:$TIDB_SINGLENODE_SCRIPTS \
     PD_DATA_DIR=$DATA_DIR/pd \
     TIKV_DATA_DIR=$DATA_DIR/tikv \
-    TIDB_TARBALL_URL=https://download.pingcap.org/tidb-$TIDB_VERSION-$BINARY_TARGET.tar.gz
+    TIDB_TARBALL_URL=https://download.pingcap.org/tidb-$TIDB_VERSION-$BINARY_TARGET.tar.gz \
+    MYSQL_HOST=127.0.0.1 \
+    MYSQL_TCP_PORT=4000
 
 RUN apt-get update \
-    && apt-get install -y wget \
+    && apt-get install -y wget mysql-client \
     && echo "Downloading $TIDB_TARBALL_URL..." \
     && wget $TIDB_TARBALL_URL -O /tmp/tidb.tar.gz --progress=dot:giga \
     && ls -la /tmp/tidb.tar.gz \
